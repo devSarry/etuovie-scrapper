@@ -30,13 +30,15 @@ const crawler = new PlaywrightCrawler({
             })
 
             console.log($('#infos h3').first().text())
+
+            const price = $('#infos h3').first().text()
             
             const dataCollected = {
                 etuovi_id: id,
                 title: title,
                 url: request.url,
                 images: images,
-                price: $('#infos h3').first().text(),
+                price: parseInt(price.replace(/[^\d.-]/g, "")),
                 size: $('h3:contains("m²")').text(),
                 floor: $('em:contains("Kerrokset")').closest('div').next().text(),
             }

@@ -1,6 +1,7 @@
 import PocketBase from 'pocketbase';
 import { randomUUID } from 'crypto';
 import axios from 'axios';
+import { ApartmentsRecord, ApartmentsResponse, PriceHistoryRecord, PriceHistoryResponse } from './pocketbase-types';
 
 const pb = new PocketBase('http://127.0.0.1:8090');
 
@@ -17,8 +18,43 @@ interface ApartmentData {
 
 export const storeData = async (data: ApartmentData) => {
     // check if apartment exists
-    // store slide show images
-    pb.autoCancellation(false)
+    const apartmentExists = await checkIfApartmentExists(data.etuovi_id)
+    if (apartmentExists) {
+        console.log('Apartment already exists')
+
+        if ( apartmentExists.price !== data.price ) {
+            console.log('Price has changed. Uploading old price to price history.')
+
+            const oldPriceRecord = await pb.collection('price_history').create<PriceHistoryResponse>({
+                apartment_id: apartmentExists.id,
+                price: apartmentExists.price
+            })
+
+            await pb.collection('apartments').update<ApartmentsResponse>(apartmentExists.id, {
+                price: data.price,
+                price_history: [...(apartmentExists.price_history || []), oldPriceRecord.id]
+            })
+        }
+
+        return        
+    }
+
+    const storeData = {
+        ...data,
+        imageIds: [],
+    }
+
+    // store apartment 
+    const newApartment = await pb.collection('apartments').create<ApartmentsRecord>({
+        title: data.title,
+        url: data.url,
+        price: data.price,
+        etuovi_id: data.etuovi_id,
+        floor: data.floor,
+        size: data.size,
+    })
+
+    // store images
 
     let imageIds : string[] = []
 
@@ -40,10 +76,17 @@ export const storeData = async (data: ApartmentData) => {
 
     console.log(imageIds)
 
-    // store apartment record w/ associated images
-    return await pb.collection('apartments').create({
-        ...data,
-        screen_shot: screenShot.id,
-        images: imageIds
-    })
+    // update apartment with image ids
+    await pb.collection('apartments').update<ApartmentsRecord>(newApartment.id, {screen_shot: screenShot.id, images: imageIds});
+}
+
+const checkIfApartmentExists = async (id: string)  => {
+    try {
+        const apartment = await pb.collection('apartments').getFirstListItem<ApartmentsResponse>(`etuovi_id="${id}"`)
+        
+        return apartment
+    } catch (error) {
+        console.log("error")
+        return false
+    }
 }
