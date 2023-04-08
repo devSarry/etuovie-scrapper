@@ -11,6 +11,8 @@ interface ApartmentData {
     price: number | string
     screen_shot: Buffer
     etuovi_id: string
+    floor: string,
+    size: string
 }
 
 export const storeData = async (data: ApartmentData) => {

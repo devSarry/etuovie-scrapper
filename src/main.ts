@@ -36,7 +36,9 @@ const crawler = new PlaywrightCrawler({
                 title: title,
                 url: request.url,
                 images: images,
-                price: $('#infos h3').first().text()
+                price: $('#infos h3').first().text(),
+                size: $('h3:contains("m²")').text(),
+                floor: $('em:contains("Kerrokset")').closest('div').next().text(),
             }
 
             Dataset.pushData(dataCollected);
