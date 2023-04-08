@@ -45,7 +45,7 @@ export const storeData = async (data: ApartmentData) => {
     }
 
     // store apartment 
-    const newApartment = await pb.collection('apartments').create<ApartmentsRecord>({
+    const newApartment = await pb.collection('apartments').create<ApartmentsResponse>({
         title: data.title,
         url: data.url,
         price: data.price,
@@ -77,7 +77,7 @@ export const storeData = async (data: ApartmentData) => {
     console.log(imageIds)
 
     // update apartment with image ids
-    await pb.collection('apartments').update<ApartmentsRecord>(newApartment.id, {screen_shot: screenShot.id, images: imageIds});
+    await pb.collection('apartments').update<ApartmentsResponse>(newApartment.id, {screen_shot: screenShot.id, images: imageIds});
 }
 
 const checkIfApartmentExists = async (id: string)  => {
