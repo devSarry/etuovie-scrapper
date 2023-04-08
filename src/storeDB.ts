@@ -1,5 +1,4 @@
 import PocketBase from 'pocketbase';
-import { Blob } from 'buffer';
 import { randomUUID } from 'crypto';
 import axios from 'axios';
 
@@ -23,7 +22,8 @@ export const storeData = async (data: ApartmentData) => {
 
     for (const image of data.images) {
         const formData = new FormData()
-        formData.append('single', new Blob([await axios.get(image, { responseType: 'arraybuffer' }).then(res => res.data)]), randomUUID())
+        const imageBuffer : Buffer = await axios.get(image, { responseType: 'arraybuffer' }).then(res => res.data)
+        formData.append('single', new Blob([imageBuffer]) as Blob, randomUUID())
 
         const imageId = await pb.collection('images').create(formData)
         imageIds.push(imageId.id)

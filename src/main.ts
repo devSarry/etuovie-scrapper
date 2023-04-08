@@ -1,6 +1,6 @@
 // For more information, see https://crawlee.dev/
-import { PlaywrightCrawler,  Dataset } from 'crawlee';
-import { storeData } from './storeDB.ts';
+import { PlaywrightCrawler,  Dataset  } from 'crawlee';
+import { storeData } from './storeDB.js';
 
 const startUrls = ['https://www.etuovi.com/myytavat-asunnot/helsinki/lauttasaari/taloyhtiot/0120209-3/asunto-oy-melkonkatu-3-bostads-ab'];
 
@@ -18,14 +18,14 @@ const crawler = new PlaywrightCrawler({
             const title = await page.title();
 
             const url = request.url
-            const id = url.split('/').pop()
+            const id = url.split('/').pop() || ''
 
             console.log(`The title of the apartmetn "${request.url}" is: ${title}.`)
 
             const images: string[] = []
 
 
-            $('.react-swipeable-view-container img').each((i, el) => {
+            $('.react-swipeable-view-container img').each((_i, el) => {
                images.push(el.attribs.src)
             })
 
