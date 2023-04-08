@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import axios from 'axios';
 import { ApartmentsRecord, ApartmentsResponse, PriceHistoryRecord, PriceHistoryResponse } from './pocketbase-types';
 
-const pb = new PocketBase('http://127.0.0.1:8090');
+const pb = new PocketBase(process.env.POCKETBASE_URL ||'http://127.0.0.1:8090');
 
 interface ApartmentData {
     title: string
