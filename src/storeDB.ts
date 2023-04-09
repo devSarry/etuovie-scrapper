@@ -5,6 +5,8 @@ import { ApartmentsRecord, ApartmentsResponse, PriceHistoryRecord, PriceHistoryR
 
 const pb = new PocketBase(process.env.POCKETBASE_URL ||'http://127.0.0.1:8090');
 
+pb.autoCancellation(process.env.POCKETBASE_URL ? true : false);
+
 interface ApartmentData {
     title: string
     url: string
